@@ -657,8 +657,8 @@ const getPriorityVariant = (
                                         link.active
                                             ? 'bg-primary text-primary-foreground'
                                             : link.url
-                                              ? 'hover:bg-muted'
-                                              : 'cursor-not-allowed opacity-50'
+                                            ? 'hover:bg-muted'
+                                            : 'cursor-not-allowed opacity-50'
                                     "
                                 />
                             </div>
