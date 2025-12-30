@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TodoListController;
+use App\Models\Task;
 use App\Models\TodoList;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -14,7 +15,28 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
+    $lists = TodoList::query()
+        ->withCount([
+            'tasks',
+            'tasks as completed_tasks_count' => function ($q) {
+                $q->where('completed', true);
+            },
+        ])
+        ->latest()
+        ->get();
+
+    $recentTasks = Task::query()->with('list:id,name,color')->latest()->get();
+    $totalTasks = Task::count();
+    $completedTasks = Task::where('completed', true)->count();
+    $pendingTasks = Task::where('completed', false)->count();
+
+    return Inertia::render('Dashboard', [
+        'lists' => $lists,
+        'recentTasks' => $recentTasks,
+        'totalTasks' => $totalTasks,
+        'completedTasks' => $completedTasks,
+        'pendingTasks' => $pendingTasks,
+    ]);
 })
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

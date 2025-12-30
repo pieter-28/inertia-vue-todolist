@@ -57,13 +57,14 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'priority' => 'nullable|string|max:16',
-            'completed' => 'nullable|boolean',
             'list_id' => 'required|exists:lists,id',
         ]);
 
-        $validate['completed'] = (bool) ($validate['completed'] ?? false);
-        $validate['priority'] = $validate['priority'] ?? 'normal';
-        Task::create($validate);
+        Task::create([
+            ...$validate,
+            'completed' => false,
+            'priority' => $validated['priority'] ?? 'normal',
+        ]);
         return redirect()->back()->with('success', 'Task berhasil dibuat');;
     }
 
@@ -95,9 +96,12 @@ class TaskController extends Controller
             'completed' => 'nullable|boolean',
         ]);
 
-        $validate['completed'] = (bool) ($validate['completed'] ?? $task->completed);
-        $validate['priority'] = $validate['priority'] ?? $task->priority;
         $task->update($validate);
+        $task->update([
+            ...$validate,
+            'completed' => $validate['completed'] ?? $task->completed,
+            'priority' => $validate['priority'] ?? $task->priority,
+        ]);
         return redirect()->back()->with('success', 'Task berhasil diperbarui');
     }
 
