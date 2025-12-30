@@ -64,7 +64,7 @@ class TaskController extends Controller
         $validate['completed'] = (bool) ($validate['completed'] ?? false);
         $validate['priority'] = $validate['priority'] ?? 'normal';
         Task::create($validate);
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Task berhasil dibuat');;
     }
 
     /**
@@ -98,7 +98,7 @@ class TaskController extends Controller
         $validate['completed'] = (bool) ($validate['completed'] ?? $task->completed);
         $validate['priority'] = $validate['priority'] ?? $task->priority;
         $task->update($validate);
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Task berhasil diperbarui');
     }
 
     /**
@@ -107,6 +107,6 @@ class TaskController extends Controller
     public function destroy(Task $task): RedirectResponse
     {
         $task->delete();
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Task berhasil dihapus');
     }
 }

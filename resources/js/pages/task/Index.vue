@@ -29,6 +29,7 @@ import {
     X,
 } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 interface Task {
     id: number;
@@ -159,6 +160,7 @@ const createTask = () => {
         onSuccess: () => {
             isCreateDialogOpen.value = false;
             createForm.reset();
+            toast.success('Task created successfully!');
         },
     });
 };
@@ -171,6 +173,7 @@ const updateTask = () => {
         onSuccess: () => {
             isEditDialogOpen.value = false;
             editForm.reset();
+            toast.success('Task updated successfully!');
         },
     });
 };
@@ -182,6 +185,7 @@ const deleteTask = (taskId: number) => {
             preserveScroll: true,
             onFinish: () => {
                 deleteTaskId.value = null;
+                toast.success('Task deleted successfully!');
             },
         });
     }

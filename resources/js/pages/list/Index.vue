@@ -18,6 +18,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { ExternalLink, Loader2, Pencil, Plus, Trash } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -74,6 +75,11 @@ const createList = () => {
         onSuccess: () => {
             isCreateDialogOpen.value = false;
             createForm.reset();
+            toast.success('List created successfully!');
+        },
+        onError: (errors) => {
+            console.error('Creation failed:', errors);
+            toast.error('List creation failed!');
         },
     });
 };
@@ -85,9 +91,11 @@ const updateList = () => {
         onSuccess: () => {
             isEditDialogOpen.value = false;
             editForm.reset();
+            toast.success('List updated successfully!');
         },
         onError: (errors) => {
             console.error('Update failed:', errors);
+            toast.error('List update failed!');
         },
     });
 };
@@ -99,6 +107,7 @@ const deleteList = (listId: number) => {
             preserveScroll: true,
             onFinish: () => {
                 deletingListId.value = null;
+                toast.success('List deleted successfully!');
             },
         });
     }
