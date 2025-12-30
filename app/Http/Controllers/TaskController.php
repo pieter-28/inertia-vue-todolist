@@ -93,7 +93,6 @@ class TaskController extends Controller
             'description' => 'nullable|string|max:255',
             'priority' => 'nullable|string|max:16',
             'completed' => 'nullable|boolean',
-            'list_id' => 'required|exists:lists,id',
         ]);
 
         $validate['completed'] = (bool) ($validate['completed'] ?? $task->completed);
