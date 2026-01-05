@@ -1,5 +1,15 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +38,7 @@ import {
     Trash,
     X,
 } from 'lucide-vue-next';
+
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -92,6 +103,9 @@ const search = ref(props.filters.search || '');
 const priority = ref(props.filters.priority || '');
 const listId = ref(props.filters.list_id || '');
 
+const isDeleteDialogOpen = ref(false);
+const taskIdToDelete = ref<number | null>(null);
+
 // Dialoh state
 const isCreateDialogOpen = ref(false);
 const isEditDialogOpen = ref(false);
@@ -113,7 +127,6 @@ const editForm = useForm({
 });
 
 // Watchers for filters changes and update the URL query parameters
-
 watchDebounced(
     [search, priority, listId],
     () => {
@@ -179,16 +192,22 @@ const updateTask = () => {
 };
 
 const deleteTask = (taskId: number) => {
-    if (confirm('Are you sure you want to delete this task?')) {
-        deleteTaskId.value = taskId;
-        router.delete(`/tasks/${taskId}`, {
-            preserveScroll: true,
-            onFinish: () => {
-                deleteTaskId.value = null;
-                toast.success('Task deleted successfully!');
-            },
-        });
-    }
+    taskIdToDelete.value = taskId;
+    isDeleteDialogOpen.value = true;
+};
+
+const confirmDeleteTask = () => {
+    if (!taskIdToDelete.value) return;
+    deleteTaskId.value = taskIdToDelete.value;
+    router.delete(`/tasks/${taskIdToDelete.value}`, {
+        preserveScroll: true,
+        onFinish: () => {
+            deleteTaskId.value = null;
+            taskIdToDelete.value = null;
+            isDeleteDialogOpen.value = false;
+            toast.success('Task deleted successfully!');
+        },
+    });
 };
 
 const openEditDialog = (task: Task) => {
@@ -657,8 +676,8 @@ const getPriorityVariant = (
                                         link.active
                                             ? 'bg-primary text-primary-foreground'
                                             : link.url
-                                            ? 'hover:bg-muted'
-                                            : 'cursor-not-allowed opacity-50'
+                                              ? 'hover:bg-muted'
+                                              : 'cursor-not-allowed opacity-50'
                                     "
                                 />
                             </div>
@@ -670,6 +689,33 @@ const getPriorityVariant = (
                 </CardContent>
             </Card>
             <!-- END Task Table -->
+
+            <!-- Delete Confirmation Dialog -->
+            <AlertDialog v-model:open="isDeleteDialogOpen">
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle> Hapus Task? </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Tindakan ini tidak dapat dibatalkan. Task akan
+                            dihapus secara permanen.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <AlertDialogFooter>
+                        <AlertDialogCancel @click="isDeleteDialogOpen = false">
+                            Batal
+                        </AlertDialogCancel>
+
+                        <AlertDialogAction
+                            class="bg-red-600 hover:bg-red-700"
+                            @click="confirmDeleteTask"
+                        >
+                            Hapus
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <!-- END Delete Confirmation Dialog -->
         </div>
     </AppLayout>
 </template>
