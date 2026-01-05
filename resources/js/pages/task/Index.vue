@@ -707,7 +707,7 @@ const getPriorityVariant = (
                         </AlertDialogCancel>
 
                         <AlertDialogAction
-                            class="bg-red-600 hover:bg-red-700"
+                            variant="destructive"
                             @click="confirmDeleteTask"
                         >
                             Hapus
